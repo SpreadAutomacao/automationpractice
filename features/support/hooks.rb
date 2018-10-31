@@ -1,11 +1,16 @@
 require_relative '../framework/helper.rb'
 
+Before do |scenario|
+  include Capybara::DSL
+  $logs = page.driver.browser.manage.logs.get(:browser)
+end
+
 After do |scenario|
   scenario_name = scenario.name.gsub(/[^A-Za-z ]/, '').gsub(/\s+/, '_')
 
   if scenario.failed?
     take_screenshot(file_name: scenario_name.downcase!, test_result: 'failed')
-    add_browser_logs
+#     add_browser_logs
   else
     take_screenshot(file_name: scenario_name.downcase!, test_result: 'passed')
   end
@@ -13,7 +18,6 @@ After do |scenario|
   path = "log/" + $logger_name
   FileUtils.rm_f(path) if File.empty?(path)
 end
-
 
 def add_browser_logs
   # Getting current URL
